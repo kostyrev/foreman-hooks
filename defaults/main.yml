@@ -1,0 +1,9 @@
+---
+# defaults file for kostyrevaa.foreman-hooks
+foreman_hooks_conf_dir: /usr/share/foreman/config/hooks
+foreman_hooks_subdirs:
+  - after_build
+  - before_provision
+  - create
+  - destroy
+

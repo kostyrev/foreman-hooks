@@ -1,0 +1,9 @@
+---
+# handlers file for kostyrevaa.foreman-hooks
+- name: foreman hooks restorecon
+  command: "/sbin/restorecon -RF -vv {{ foreman_hooks_conf_dir }}"
+  register: restorecon_output
+
+- debug: var=restorecon_output.stdout_lines
+
+

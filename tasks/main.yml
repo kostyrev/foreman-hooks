@@ -1,0 +1,61 @@
+---
+# tasks file for kostyrevaa.foreman-hooks
+
+- name: install foreman_hooks plugin
+  yum: name=ruby193-rubygem-foreman_hooks state=present
+  notify:
+    - foreman hooks restorecon
+  tags:
+    - foreman
+    - foreman-hooks
+
+- name: create subdirs
+  file: path={{ foreman_hooks_conf_dir }}/host/managed/{{ item }} state=directory owner={{ foreman_user }} group={{ foreman_group }} mode=0555
+  with_items: "{{ foreman_hooks_subdirs }}"
+  tags:
+    - foreman
+    - foreman-hooks
+
+- name: copy example hooks
+  template: src={{ item }} dest={{ foreman_hooks_conf_dir }} owner={{ foreman_user }} group={{ foreman_group }} mode=0555
+  notify:
+    - foreman hooks restorecon
+  with_items:
+    - ../../../files/foreman_sync/scripts/create_tunnel
+    - ../../../files/foreman_sync/scripts/destroy_tunnel
+    - ../../../files/foreman_sync/scripts/sync_dns
+  tags:
+    - foreman
+    - foreman-hooks
+
+- name: create symlinks to create tunnel
+  file: src={{ foreman_hooks_conf_dir }}/create_tunnel dest={{ foreman_hooks_conf_dir }}/host/managed/{{ item }}/00_create_tunnel state=link
+  with_items:
+    - after_build
+    - create
+  notify:
+    - foreman hooks restorecon    
+  tags:
+    - foreman
+    - foreman-hooks
+
+- name: create symlinks to destroy tunnel
+  file: src={{ foreman_hooks_conf_dir }}/destroy_tunnel dest={{ foreman_hooks_conf_dir }}/host/managed/{{ item }}/00_destroy_tunnel state=link
+  with_items:
+    - destroy
+    - before_provision
+  notify:
+    - foreman hooks restorecon    
+  tags:
+    - foreman
+    - foreman-hooks
+
+- name: create symlinks to sync_dns
+  file: src={{ foreman_hooks_conf_dir }}/sync_dns dest={{ foreman_hooks_conf_dir }}/host/managed/{{ item }}/10_sync_dns state=link
+  with_items:
+    - create
+  notify:
+    - foreman hooks restorecon    
+  tags:
+    - foreman
+    - foreman-hooks
