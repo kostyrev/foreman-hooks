@@ -59,3 +59,9 @@
   tags:
     - foreman
     - foreman-hooks
+
+- name: set permission for autossh
+  file: path=/var/run/autossh owner=foreman group=foreman mode=0750
+  tags:
+    - foreman
+    - foreman-hooks
